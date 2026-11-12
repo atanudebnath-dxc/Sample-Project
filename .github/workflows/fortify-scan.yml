@@ -1,0 +1,59 @@
+name: WebGoat Fortify SAST
+ 
+on:
+  workflow_dispatch:
+ 
+permissions:
+  contents: read
+  security-events: write
+ 
+jobs:
+  fortify-scan:
+    runs-on: ubuntu-latest
+ 
+    # Common environment for every step
+    env:
+      FOD_URL: https://ams.fortify.com
+      FOD_TENANT: ${{ secrets.FOD_TENANT }}
+      FOD_CLIENT_ID: ${{ secrets.FOD_CLIENT_ID }}
+      FOD_CLIENT_SECRET: ${{ secrets.FOD_CLIENT_SECRET }}
+ 
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+ 
+      - name: Setup Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache : maven
+ 
+      - name: Verify Java and Maven
+        run: |
+          java -version
+          javac -version
+          mvn -version
+ 
+      # Verify URL is available
+      - name: Validate Fortify URL
+        shell: bash
+        run: |
+          if [ -z "$FOD_URL" ]; then
+            echo "::error::FOD_URL is missing"
+            exit 1
+          fi
+ 
+          echo "FOD_URL is configured successfully."
+ 
+      # Fortify scan
+      - name: Fortify on Demand SAST Scan
+        uses: fortify/github-action@v3
+        env:
+          FOD_RELEASE: webgoat:master
+          DO_SETUP: 'true'
+          SAST_ASSESSMENT_TYPE: Static Assessment
+          DO_SAST_SCAN: 'true'
+          DO_WAIT: 'true'
+          DO_SAST_EXPORT: 'true'
+          PACKAGE_EXTRA_OPTS: "-bt mvn"
