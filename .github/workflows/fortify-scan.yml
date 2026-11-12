@@ -22,19 +22,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
  
-      - name: Setup Java
-        uses: actions/setup-java@v6
-        with:
-          distribution: temurin
-          java-version: '25'
-          cache : maven
- 
-      - name: Verify Java and Maven
-        run: |
-          java -version
-          javac -version
-          mvn -version
- 
+      
       # Verify URL is available
       - name: Validate Fortify URL
         shell: bash
