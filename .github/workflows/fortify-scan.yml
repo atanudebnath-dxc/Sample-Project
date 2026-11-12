@@ -44,4 +44,3 @@ jobs:
           DO_SAST_SCAN: 'true'
           DO_WAIT: 'true'
           DO_SAST_EXPORT: 'true'
-          PACKAGE_EXTRA_OPTS: "-bt mvn"
